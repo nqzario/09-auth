@@ -1,0 +1,115 @@
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
+import { checkServerSession } from "./lib/api/serverApi";
+import { parse } from "cookie";
+
+const privateRoutes = [
+  "/profile",
+  "/profile/:path*",
+  "/notes",
+  "/notes/:path*",
+];
+const publicRoutes = ["/sign-in", "/sign-up"];
+export const middleware = async (request: NextRequest) => {
+  const { pathname } = request.nextUrl;
+  const cookieStore = await cookies();
+  const isPrivateRoute = privateRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+  const isPublicRoute = publicRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+  if (isPrivateRoute) {
+    if (accessToken) {
+      return NextResponse.next({ headers: { Cookie: cookieStore.toString() } });
+    }
+
+    if (refreshToken) {
+      try {
+        const apiRes = await checkServerSession();
+
+        const setCookie = apiRes.headers["set-cookie"];
+
+        if (setCookie) {
+          const cookieArray = Array.isArray(setCookie)
+            ? setCookie
+            : [setCookie];
+          for (const cookieStr of cookieArray) {
+            const parsed = parse(cookieStr);
+
+            const options = {
+              expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
+              path: parsed.Path,
+              maxAge: Number(parsed["Max-Age"]),
+            };
+
+            if (parsed.accessToken)
+              cookieStore.set("accessToken", parsed.accessToken, options);
+            if (parsed.refreshToken)
+              cookieStore.set("refreshToken", parsed.refreshToken, options);
+          }
+          return NextResponse.next({
+            headers: { Cookie: cookieStore.toString() },
+          });
+        }
+
+        return NextResponse.redirect(
+          new URL("/sign-in", request.nextUrl.origin)
+        );
+      } catch {
+        return NextResponse.redirect(
+          new URL("/sign-in", request.nextUrl.origin)
+        );
+      }
+    }
+    return NextResponse.redirect(new URL("/sign-in", request.nextUrl.origin));
+  }
+  if (isPublicRoute) {
+    if (accessToken) {
+      return NextResponse.redirect(new URL("/", request.nextUrl.origin));
+    }
+    if (refreshToken) {
+      try {
+        const apiRes = await checkServerSession();
+
+        const setCookie = apiRes.headers["set-cookie"];
+
+        if (setCookie) {
+          const cookieArray = Array.isArray(setCookie)
+            ? setCookie
+            : [setCookie];
+          for (const cookieStr of cookieArray) {
+            const parsed = parse(cookieStr);
+
+            const options = {
+              expires: parsed.Expires ? new Date(parsed.Expires) : undefined,
+              path: parsed.Path,
+              maxAge: Number(parsed["Max-Age"]),
+            };
+
+            if (parsed.accessToken)
+              cookieStore.set("accessToken", parsed.accessToken, options);
+            if (parsed.refreshToken)
+              cookieStore.set("refreshToken", parsed.refreshToken, options);
+          }
+          return NextResponse.redirect(new URL("/", request.nextUrl.origin));
+        }
+
+        return NextResponse.redirect(
+          new URL("/sign-in", request.nextUrl.origin)
+        );
+      } catch {
+        return NextResponse.redirect(
+          new URL("/sign-in", request.nextUrl.origin)
+        );
+      }
+    }
+    return NextResponse.next();
+  }
+  return NextResponse.next();
+};
+export const config = {
+  matcher: ["/profile/:path*", "/notes/:path*", "/sign-in", "/sign-up"],
+};
