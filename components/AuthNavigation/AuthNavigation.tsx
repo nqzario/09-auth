@@ -5,7 +5,7 @@ import css from "./AuthNavigation.module.css";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { logOut } from "@/lib/api/clientApi";
-import TagsMenu from "../TagsMenu/TagsMenu";
+// import TagsMenu from "../TagsMenu/TagsMenu";
 import MobileMenu from "./MobileMenu";
 
 const AuthNavigation = () => {
@@ -22,7 +22,9 @@ const AuthNavigation = () => {
     return (
       <>
         <li className={css.navigationItem}>
-          <TagsMenu />
+          <Link href="/notes/filter/all" className={css.navigationLink}>
+            All Notes
+          </Link>
         </li>
 
         <li className={css.navigationItem}>

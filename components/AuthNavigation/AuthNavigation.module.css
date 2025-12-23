@@ -19,7 +19,7 @@
 }
 
 .logoutButton:hover {
-  background-color: #333;
+  background: linear-gradient(90deg, #3e1a23, #1d2e3e, #25391b);
   color: white;
   border-color: #333;
 }

@@ -12,7 +12,7 @@ const Header = () => {
       </Link>
       <nav aria-label="Main Navigation">
         <ul className={css.navigation}>
-          <li>
+          <li className={css.navigationItem}>
             <Link href="/" className={css.navLink}>
               <FiHome className={css.icon} /> Home
             </Link>

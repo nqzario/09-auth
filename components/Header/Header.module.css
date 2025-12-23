@@ -28,12 +28,10 @@
 
 .navLink {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #444;
   text-decoration: none;
+  color: #444;
+  font-size: 1rem;
+  font-weight: 500;
   padding: 8px 12px;
   border-radius: 8px;
   transition: background 0.2s ease, color 0.2s ease;
@@ -42,6 +40,10 @@
 .navLink:hover {
   background: #ffffffa8;
   color: #2a5d9f;
+}
+.navigationItem {
+  display: flex;
+  align-items: center;
 }
 
 .icon {

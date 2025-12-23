@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Notehub",
     description: "Create your own notes and you will never forget anything.",
-    url: "https://08-zustand-two-pi.vercel.app/notes/filter/All",
+    url: "https://08-zustand-two-pi.vercel.app/notes/filter/all",
     images: [
       {
         url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
@@ -25,9 +25,9 @@ export const metadata: Metadata = {
 
 const Layout = ({ children, sidebar }: LayoutProps) => {
   return (
-    <div>
+    <div style={{ display: "flex", alignItems: "flex-start" }}>
       {sidebar}
-      {children}
+      <main style={{ flex: 1 }}>{children}</main>
     </div>
   );
 };
